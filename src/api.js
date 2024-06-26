@@ -28,14 +28,7 @@ export async function getProducts() {
 }
 
 export async function getByIdProduct(id) {
-  // const token = localStorage.getItem('token')
   const response = await fetch(`${API_URL}/products/${id}`);
-  // , {
-  //   method: "GET",
-  //   headers: {
-  //     "Content-Type": "text/plain",
-  //     'Authorization': `Bearer ${token} `
-  //   },
   const json = await response.json();
   return json;
 }
