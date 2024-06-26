@@ -2,26 +2,47 @@ import { toast } from "sonner";
 import { login } from "../api";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-export default function LoginPage() {
+import clsx from "clsx";
+import { useState } from "react";
 
-  const navigate = useNavigate()
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     handleSubmit,
     register,
-    // formState: { errors },
+    formState: { errors },
+    setError,
   } = useForm();
 
   async function onSubmit(data) {
     try {
       const token = await login(data.username, data.password);
-      window.localStorage.setItem("token", token);
-      toast.success('Login Correcto')
-      navigate('/productos')
+      if (token) {
+        window.localStorage.setItem("token", token);
+        toast.success("Login Correcto");
+        navigate("/productos");
+      } else {
+        toast.error("Usuario o password incorrecto");
+
+        setError("root.credentials", {
+          type: "manual",
+          message: "Credenciales invalidas",
+        });
+        // setError("username", {
+        //   type: "manual",
+        //   message: "usuario invalido",
+        // });
+      }
     } catch (error) {
       toast.error("Errpr al iniciar sesion");
       console.error("[login Error]", error);
     }
+  }
+
+  function handleShowHandlePassword() {
+    setShowPassword(!showPassword);
   }
 
   return (
@@ -29,7 +50,12 @@ export default function LoginPage() {
       <p className="text-4xl font-bold text-center">Login</p>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="border-white/50 border rounded p-4 flex flex-col gap-4 max-w-sm w-ful"
+        className={clsx(
+          "border border-white/50  rounded p-4 flex flex-col gap-4 max-w-sm w-ful",
+          {
+            "border-red-500": errors.root?.credentials, // ? significa: si existe root ingresa a credentials
+          }
+        )}
       >
         <input
           type="text"
@@ -40,16 +66,25 @@ export default function LoginPage() {
           })}
         />
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="passsword"
           className="border-white/50 rounded p-2 text-black"
           {...register("password", {
             required: { value: true, message: "password requerido" },
           })}
         />
+        <span
+          className="text-sm text-white cursor-pointer hover:text-white"
+          onClick={handleSubmit(handleShowHandlePassword)}
+        >
+          {showPassword ? "🙈 Ocultar" : "🙉 Mostrar"} password
+        </span>
         <button className="bg-teal-500 p-2 text-black rounded hover:bg-teal-300">
           Ingresar
         </button>
+        {errors.root?.credentials && (
+          <p className="text-red-500 text-center">Credenciales invalidas</p>
+        )}
       </form>
     </main>
   );
