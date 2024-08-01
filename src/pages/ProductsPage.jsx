@@ -1,31 +1,15 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../api";
 import { toast } from "sonner";
-import { Link, useNavigate } from "react-router-dom";
+import { Link  } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 export default function ProductsPage() {
-  // const [count, setCount] = useState(0);
-
-  // useEffect(() => {
-  //   console.log("termino de renderizar");
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("useefect count, ", count);
-  // }, [count]);
-
   const [products, setProducts] = useState([]);
-  const navigate = useNavigate();
+
+  useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.error("Debes iniciar sesion");
-      navigate("/login");
-      return;
-    }
-
     getProducts()
       .then((prods) => {
         setProducts(prods);

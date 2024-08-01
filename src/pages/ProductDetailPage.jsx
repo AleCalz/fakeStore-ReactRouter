@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getByIdProduct } from "../api";
 import { toast } from "sonner";
+import useAuth from "../hooks/useAuth";
 
 export default function ProductDetailPage() {
-  const { id } = useParams();
-  const [product, setProduct] = useState({});
+  useAuth();
+
+  const { id } = useParams(); //llega desd la url CON EL HOOK useParams() lo traemos
+  const [product, setProduct] = useState({}); //solo nos llega un json desde la api, inicializmo estado a {} vacio
 
   useEffect(() => {
     getByIdProduct(id)
